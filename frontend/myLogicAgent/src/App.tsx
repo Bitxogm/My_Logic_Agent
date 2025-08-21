@@ -1,57 +1,43 @@
-import { useState } from 'react';
-import reactLogo from './assets/react.svg';
-import viteLogo from '/vite.svg';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { Toaster } from 'react-hot-toast';
+import Dashboard from './pages/Dashboard';
 import './index.css';
 
-// 1. Importa 'toast' y 'Toaster'
-import toast, { Toaster } from 'react-hot-toast';
-
 function App() {
-  const [count, setCount] = useState(0);
-
-  // Función para mostrar la notificación
-  const notify = () => toast('¡Hola! Soy una tostada.');
-
   return (
-    <>
-      {/* 2. Coloca el componente <Toaster /> en la raíz */}
-      <Toaster />
-      
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <h1 className="text-3xl font-bold underline  bg-red-500 ">
-        Hello world!
-      </h1>
-      <button className="btn btn-circle w-3xl ">daisy</button>
-      
-      {/* 3. Añade la función de 'toast' al evento onClick */}
-      <button onClick={notify} className="btn btn-primary w-3xl ">
-        Mostrar Toast
-      </button>
-      
-      <button className="btn btn-secondary w-3xl ">daisy</button>
-      <button className="btn btn-circle w-3xl ">daisy</button>
+    <Router>
+      <div className="min-h-screen bg-base-100">
+        <Toaster 
+          position="top-right"
+          toastOptions={{
+            duration: 4000,
+            style: {
+              background: '#363636',
+              color: '#fff',
+            },
+          }}
+        />
 
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+        <Routes>
+          <Route path="/" element={<Dashboard />} />
+          <Route path="/dashboard" element={<Dashboard />} />
+          
+          {/* Rutas temporales */}
+          <Route path="/chat" element={<div className="p-8 text-center"><h1 className="text-2xl">🚧 Chat en construcción</h1></div>} />
+          <Route path="/generator" element={<div className="p-8 text-center"><h1 className="text-2xl">🚧 Generador en construcción</h1></div>} />
+          
+          {/* 404 */}
+          <Route path="*" element={
+            <div className="flex flex-col items-center justify-center min-h-screen">
+              <h1 className="text-6xl font-bold text-primary">404</h1>
+              <p className="text-xl text-gray-600 mt-4">Página no encontrada</p>
+              <a href="/" className="btn btn-primary mt-6">Volver al inicio</a>
+            </div>
+          } />
+        </Routes>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
