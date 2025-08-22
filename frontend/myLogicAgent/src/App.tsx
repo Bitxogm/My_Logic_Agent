@@ -1,6 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Dashboard from './pages/Dashboard';
+import ChatPage from './pages/ChatPage';
+import GeneratorPage from './pages/GeneratorPage';
 import './index.css';
 
 function App() {
@@ -21,10 +23,9 @@ function App() {
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/chat" element={<ChatPage />} />
+          <Route path="/generator" element={<GeneratorPage />} />
           
-          {/* Rutas temporales */}
-          <Route path="/chat" element={<div className="p-8 text-center"><h1 className="text-2xl">🚧 Chat en construcción</h1></div>} />
-          <Route path="/generator" element={<div className="p-8 text-center"><h1 className="text-2xl">🚧 Generador en construcción</h1></div>} />
           
           {/* 404 */}
           <Route path="*" element={
