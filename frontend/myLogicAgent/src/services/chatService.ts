@@ -1,5 +1,5 @@
 import api from './api';
-import { ChatRequest, ChatResponse, ChatSession } from '../types/chat';
+import { ChatRequest, ChatResponse, ChatSession,ChatSessionSummary } from '../types/chat';
 
 export const chatService = {
   // Enviar mensaje al chatbot
@@ -11,6 +11,10 @@ export const chatService = {
   // Obtener historial de chat
   getHistory: async (sessionId: string): Promise<ChatSession> => {
     const response = await api.get(`/chatbot/history/${sessionId}`);
+    return response.data;
+  },
+    getAllSessions: async (): Promise<ChatSessionSummary[]> => {
+    const response = await api.get('/chatbot/sessions');
     return response.data;
   },
 

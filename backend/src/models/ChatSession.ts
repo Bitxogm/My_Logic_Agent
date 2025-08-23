@@ -8,8 +8,10 @@ export interface IChatMessage {
 
 export interface IChatSession extends Document {
   sessionId: string;
+  title: string; 
   messages: IChatMessage[];
-  context?: string; // Contexto del ejercicio si aplica
+  context?: string;
+  lastActivity: Date; 
   createdAt: Date;
   updatedAt: Date;
 }
@@ -22,8 +24,10 @@ const ChatMessageSchema = new Schema<IChatMessage>({
 
 const ChatSessionSchema = new Schema<IChatSession>({
   sessionId: { type: String, required: true, unique: true },
+  title: { type: String, required: true }, 
   messages: [ChatMessageSchema],
   context: { type: String },
+  lastActivity: { type: Date, default: Date.now }, 
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now }
 });

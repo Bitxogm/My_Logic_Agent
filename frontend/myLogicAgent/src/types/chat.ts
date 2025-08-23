@@ -22,3 +22,14 @@ export interface ChatResponse {
   sessionId: string;
   messageCount: number;
 }
+
+export interface ChatSessionSummary {
+  sessionId: string;
+  title: string;
+  lastActivity: string;
+  createdAt: string;
+}
+
+export interface ChatHistoryResponse {
+  sessions: ChatSessionSummary[];
+}

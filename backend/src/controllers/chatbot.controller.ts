@@ -14,16 +14,27 @@ export const chatWithBot = async (req: Request, res: Response) => {
 
     // Generar sessionId si no existe
     const currentSessionId = sessionId || uuidv4();
-    
+
     // Buscar o crear sesión
     let session = await ChatSession.findOne({ sessionId: currentSessionId });
     if (!session) {
+      // Generar título basado en el primer mensaje
+      const title = message.length > 50
+        ? message.substring(0, 50) + '...'
+        : message;
+
       session = new ChatSession({
         sessionId: currentSessionId,
+        title: title, // ← AÑADIR este campo
         messages: [],
-        context: context || ''
+        context: context || '',
+        lastActivity: new Date() // ← AÑADIR este campo también
       });
     }
+
+    // Actualizar última actividad siempre
+    session.lastActivity = new Date();
+    session.updatedAt = new Date();
 
     // Añadir mensaje del usuario
     const userMessage: IChatMessage = {
@@ -82,7 +93,7 @@ Responde de manera clara, didáctica y amigable. Si explicas código, usa ejempl
 export const getChatHistory = async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
-    
+
     const session = await ChatSession.findOne({ sessionId });
     if (!session) {
       return res.status(404).json({ error: 'Sesión no encontrada' });
@@ -103,11 +114,25 @@ export const getChatHistory = async (req: Request, res: Response) => {
 export const clearChatSession = async (req: Request, res: Response) => {
   try {
     const { sessionId } = req.params;
-    
+
     await ChatSession.findOneAndDelete({ sessionId });
     res.json({ message: 'Sesión eliminada' });
 
   } catch (error: any) {
     res.status(500).json({ error: 'Error eliminando sesión' });
+  }
+};
+
+export const getAllSessions = async (req: Request, res: Response) => {
+  try {
+    const sessions = await ChatSession
+      .find()
+      .select('sessionId title lastActivity createdAt')
+      .sort({ lastActivity: -1 })
+      .limit(20);
+
+    res.json(sessions);
+  } catch (error: any) {
+    res.status(500).json({ error: 'Error obteniendo sesiones' });
   }
 };
