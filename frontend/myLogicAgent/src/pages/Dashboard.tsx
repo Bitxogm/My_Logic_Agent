@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { exerciseService } from '../services';
-import { Exercise } from '../types/exercise';
+import type { Exercise } from '../types/exercise';
 import toast from 'react-hot-toast';
 
 const Dashboard = () => {
@@ -27,7 +27,7 @@ const Dashboard = () => {
 
   const handleDeleteExercise = async (id: string) => {
     if (!confirm('¿Estás seguro de eliminar este ejercicio?')) return;
-    
+
     try {
       await exerciseService.delete(id);
       setExercises(exercises.filter(ex => ex._id !== id));
@@ -111,7 +111,7 @@ const Dashboard = () => {
               <Link to="/generator" className="btn btn-ghost btn-sm">Ir →</Link>
             </div>
           </div>
-          
+
           <div className="card bg-gradient-to-r from-accent to-primary text-white">
             <div className="card-body">
               <h3 className="card-title">📊 Diagramas</h3>
@@ -119,7 +119,7 @@ const Dashboard = () => {
               <Link to="/generator" className="btn btn-ghost btn-sm">Ir →</Link>
             </div>
           </div>
-          
+
           <div className="card bg-gradient-to-r from-secondary to-accent text-white">
             <div className="card-body">
               <h3 className="card-title">💬 Chat IA</h3>
@@ -127,12 +127,13 @@ const Dashboard = () => {
               <Link to="/chat" className="btn btn-ghost btn-sm">Ir →</Link>
             </div>
           </div>
-          
+
+          {/* ← ESTA tarjeta CAMBIA */}
           <div className="card bg-gradient-to-r from-warning to-error text-white">
             <div className="card-body">
-              <h3 className="card-title">➕ Nuevo</h3>
-              <p>Crear ejercicio</p>
-              <div className="btn btn-ghost btn-sm">Próximamente</div>
+              <h3 className="card-title">📚 Gestionar</h3>
+              <p>Administrar ejercicios</p>
+              <Link to="/exercise/manage" className="btn btn-ghost btn-sm">Ir →</Link>
             </div>
           </div>
         </div>
@@ -141,9 +142,10 @@ const Dashboard = () => {
       {/* Ejercicios */}
       <div className="mb-6 flex justify-between items-center">
         <h2 className="text-2xl font-bold">📚 Biblioteca de Ejercicios</h2>
-        <button className="btn btn-primary" disabled>
-          ➕ Crear Ejercicio (Próximamente)
-        </button>
+        {/* ← ESTE botón CAMBIA */}
+        <Link to="/exercise/manage" className="btn btn-primary">
+          📚 Gestionar Ejercicios
+        </Link>
       </div>
 
       {exercises.length === 0 ? (
@@ -154,14 +156,15 @@ const Dashboard = () => {
             Puedes crear ejercicios usando nuestro generador o añadirlos manualmente
           </p>
           <div className="flex gap-4 justify-center">
-            <Link to="/generator" className="btn btn-primary">
-              🔧 Usar Generador
+            <Link to="/exercise/manage" className="btn btn-primary">
+              📚 Gestionar Ejercicios
             </Link>
             <Link to="/chat" className="btn btn-secondary">
               💬 Hablar con IA
             </Link>
           </div>
         </div>
+
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {exercises.map((exercise) => (
@@ -169,14 +172,13 @@ const Dashboard = () => {
               <div className="card-body">
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="card-title text-lg">{exercise.title}</h3>
-                  <div className={`badge ${
-                    exercise.difficulty === 'easy' ? 'badge-success' :
+                  <div className={`badge ${exercise.difficulty === 'easy' ? 'badge-success' :
                     exercise.difficulty === 'medium' ? 'badge-warning' : 'badge-error'
-                  }`}>
+                    }`}>
                     {exercise.difficulty}
                   </div>
                 </div>
-                
+
                 <p className="text-sm text-gray-600 mb-4 line-clamp-3">
                   {exercise.description}
                 </p>
@@ -195,7 +197,7 @@ const Dashboard = () => {
 
                 <div className="card-actions justify-end">
                   <button className="btn btn-sm btn-ghost">Ver</button>
-                  <button 
+                  <button
                     onClick={() => handleDeleteExercise(exercise._id)}
                     className="btn btn-error btn-sm"
                   >
@@ -212,3 +214,8 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+
+
+
+

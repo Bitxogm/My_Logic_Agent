@@ -1,16 +1,27 @@
 import express from 'express';
+import { Router } from 'express';
+
 import Exercise from '../models/Exercise';
 import {
-   getExercises, 
-   createExercise, 
-   deleteExercise } from '../controllers/exercise.controller';
-
+  getExercises,
+  createExercise,
+  deleteExercise,
+  getExerciseById,
+  updateExercise,
+  searchExercises,
+  getExerciseStats
+} from '../controllers/exercise.controller';
 
 const router = express.Router();
 
 router.get('/', getExercises);
 router.post('/', createExercise);
 router.delete('/', deleteExercise);
+router.get('/stats', getExerciseById);
+router.get('/search', searchExercises);
+router.get('/:id', getExerciseById);
+router.put('/:id', updateExercise);
+
 
 // 🧠 Obtener todos los ejercicios
 router.get('/', async (_req: express.Request, res: express.Response) => {
@@ -45,3 +56,4 @@ router.delete('/:id', async (req, res) => {
 });
 
 export default router;
+

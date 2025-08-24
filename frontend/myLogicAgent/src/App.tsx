@@ -3,6 +3,8 @@ import { Toaster } from 'react-hot-toast';
 import Dashboard from './pages/Dashboard';
 import ChatPage from './pages/ChatPage';
 import GeneratorPage from './pages/GeneratorPage';
+import ExerciseManager from './pages/ExerciseManager';
+import CreateExercise from './pages/CreateExercise';
 import './index.css';
 
 function App() {
@@ -25,6 +27,8 @@ function App() {
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
+          <Route path="/exercise/manage" element={<ExerciseManager />} />
+           <Route path="/exercise/create" element={<CreateExercise />} />
           
           
           {/* 404 */}
