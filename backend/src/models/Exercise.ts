@@ -8,6 +8,9 @@ export interface IExercise extends Document {
   code?: string;
   language?: string;
   createdAt: Date;
+  aiAnalysis?: string;      // Análisis generadou
+  generatedCode?: string;   // Código generado por IA
+  diagramCode?: string;     // Código Mermaid del diagrama
 }
 
 const ExerciseSchema: Schema = new Schema<IExercise>({
@@ -19,9 +22,12 @@ const ExerciseSchema: Schema = new Schema<IExercise>({
     default: 'medium',
   },
   tags: { type: [String], default: [] },
-  code: {type: String},
-  language: {type: String},
+  code: { type: String },
+  language: { type: String },
   createdAt: { type: Date, default: Date.now },
+  aiAnalysis: { type: String },
+  generatedCode: { type: String },
+  diagramCode: { type: String },
 });
 
 export default mongoose.model<IExercise>('Exercise', ExerciseSchema);

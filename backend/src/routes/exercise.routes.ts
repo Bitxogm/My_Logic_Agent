@@ -9,7 +9,9 @@ import {
   getExerciseById,
   updateExercise,
   searchExercises,
-  getExerciseStats
+  getExerciseStats,
+  saveAIResult
+  
 } from '../controllers/exercise.controller';
 
 const router = express.Router();
@@ -21,6 +23,7 @@ router.get('/stats', getExerciseById);
 router.get('/search', searchExercises);
 router.get('/:id', getExerciseById);
 router.put('/:id', updateExercise);
+router.put('/:id/ai-result', saveAIResult);
 
 
 // 🧠 Obtener todos los ejercicios

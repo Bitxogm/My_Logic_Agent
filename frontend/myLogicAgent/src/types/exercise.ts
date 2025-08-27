@@ -7,6 +7,9 @@ export interface Exercise {
   code?: string;
   language?: string;
   createdAt: string;
+  aiAnalysis?: string;
+  generatedCode?: string;
+  diagramCode?: string;
 }
 
 export interface CreateExerciseRequest {

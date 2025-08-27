@@ -5,13 +5,15 @@ import ChatPage from './pages/ChatPage';
 import GeneratorPage from './pages/GeneratorPage';
 import ExerciseManager from './pages/ExerciseManager';
 import CreateExercise from './pages/CreateExercise';
+import EditExercise from './pages/EditExercise';
+import ExerciseDetail from './pages/ExerciseDetail';
 import './index.css';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-base-100">
-        <Toaster 
+        <Toaster
           position="top-right"
           toastOptions={{
             duration: 4000,
@@ -28,9 +30,11 @@ function App() {
           <Route path="/chat" element={<ChatPage />} />
           <Route path="/generator" element={<GeneratorPage />} />
           <Route path="/exercise/manage" element={<ExerciseManager />} />
-           <Route path="/exercise/create" element={<CreateExercise />} />
-          
-          
+          <Route path="/exercise/create" element={<CreateExercise />} />
+          <Route path="/exercise/:id/edit" element={<EditExercise />} />
+          <Route path="/exercise/:id" element={<ExerciseDetail />} />
+
+
           {/* 404 */}
           <Route path="*" element={
             <div className="flex flex-col items-center justify-center min-h-screen">

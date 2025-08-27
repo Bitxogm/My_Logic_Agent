@@ -6,7 +6,7 @@ import toast from 'react-hot-toast';
 import MessageActions from '../components/chat/MessageActions';
 import MermaidViewer from '../components/MermaidViewer';
 import ChatHistory from '../components/chat/ChatHistory';
-import type { ChatSessionSummary } from '../types/chat';
+import { useSearchParams } from 'react-router-dom';
 
 
 const ChatPage = () => {
@@ -19,6 +19,8 @@ const ChatPage = () => {
   const [diagramCode, setDiagramCode] = useState('');
   const [showHistory, setShowHistory] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [searchParams] = useSearchParams();
+
 
   // Auto scroll al último mensaje
   const scrollToBottom = () => {
@@ -28,6 +30,13 @@ const ChatPage = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  useEffect(() => {
+    const exerciseContext = searchParams.get('context');
+    if (exerciseContext) {
+      // Enviar automáticamente un mensaje con el contexto
+      setInputMessage(`Ayúdame con este ejercicio: ${decodeURIComponent(exerciseContext)}`);
+    }
+  }, [searchParams]);
 
   // Enviar mensaje
   const handleSendMessage = async () => {

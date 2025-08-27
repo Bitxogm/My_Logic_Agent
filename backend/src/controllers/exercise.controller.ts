@@ -220,3 +220,41 @@ export const getExerciseStats = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ error: 'Error obteniendo estadísticas' });
   }
 };
+
+// Guardar resultado de IA en ejercicio
+export const saveAIResult = async (req: Request, res: Response)  => {
+  try {
+    const { type, content } = req.body; // type: 'analysis' | 'code' | 'diagram'
+    
+    let updateField: any = {};
+    
+    switch (type) {
+      case 'analysis':
+        updateField.aiAnalysis = content;
+        break;
+      case 'code':
+        updateField.generatedCode = content;
+        break;
+      case 'diagram':
+        updateField.diagramCode = content;
+        break;
+      default:
+        return res.status(400).json({ error: 'Tipo inválido' });
+    }
+
+    const updatedExercise = await Exercise.findByIdAndUpdate(
+      req.params.id,
+      updateField,
+      { new: true }
+    );
+
+    if (!updatedExercise) {
+      res.status(404).json({ error: 'Ejercicio no encontrado' });
+      return;
+    }
+
+    res.json(updatedExercise);
+  } catch (err) {
+    res.status(500).json({ error: 'Error guardando resultado IA' });
+  }
+};
