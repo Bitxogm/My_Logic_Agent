@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { exerciseService, agentService } from '../services';
 import type { Exercise } from '../types/exercise';
+import { useAIResults } from '../hooks/useAIResults';
 import CodeViewer from '../components/CodeViewer';
 import toast from 'react-hot-toast';
 
@@ -13,6 +14,8 @@ const ExerciseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [analyzingCode, setAnalyzingCode] = useState(false);
   const [generatingDiagram, setGeneratingDiagram] = useState(false);
+  const [generatingCode, setGeneratingCode] = useState(false);
+  const { saveAIResult, isSaving } = useAIResults();
 
 
   // ✅ Envolver loadExercise en useCallback
@@ -34,18 +37,33 @@ const ExerciseDetail = () => {
       loadExercise(id);
     }
   }, [id, loadExercise]); // ← Ambas dependencias
+
   const handleAnalyzeWithAI = async () => {
-    if (!exercise) return;
+    if (!exercise || !id) return;
 
     setAnalyzingCode(true);
     try {
-      await agentService.solveLogic({
+      const result = await agentService.solveLogic({
         modo: 'code',
         enunciado: exercise.description
       });
+      console.log('🔍 Resultado completo:', result);
 
-      // Navegar al chat con el análisis
-      toast.success('Análisis generado. Redirigiendo al chat...');
+      // NUEVO: Guardar resultado automáticamente
+      if (result && result.respuesta) {
+        console.log('📝 Guardando análisis:', result.respuesta)
+        const savedExercise = await saveAIResult(id, { aiAnalysis: result.respuesta });
+        console.log('✅ Ejercicio guardado:', savedExercise);
+
+        // Actualizar exercise local para mostrar el resultado
+        toast.success('Análisis generado y guardado');
+        setExercise(prev => {
+          const updated = prev ? { ...prev, aiAnalysis: result.respuesta } : prev;
+          console.log('🔄 Estado actualizado:', updated); // 👈 AÑADIR
+          return updated;
+        });
+      }
+
       setTimeout(() => {
         navigate('/chat');
       }, 1500);
@@ -58,16 +76,24 @@ const ExerciseDetail = () => {
   };
 
   const handleGenerateDiagram = async () => {
-    if (!exercise) return;
+    if (!exercise || !id) return;
 
     setGeneratingDiagram(true);
     try {
-      await agentService.generateDiagram({
+      const result = await agentService.generateDiagram({
         enunciado: `Crear diagrama de flujo para: ${exercise.title}. ${exercise.description}`
       });
 
-      // Navegar al generador con el diagrama
-      toast.success('Diagrama generado. Redirigiendo...');
+      // CAMBIAR: result.diagram → result.mermaid
+      if (result && result.mermaid) {
+        await saveAIResult(id, { diagramCode: result.mermaid });
+        toast.success('Diagrama generado y guardado');
+        // Actualizar exercise local
+        setExercise(prev => prev ? { ...prev, diagramCode: result.mermaid } : prev);
+      } else {
+        toast.success('Diagrama generado. Redirigiendo...');
+      }
+
       setTimeout(() => {
         navigate('/generator');
       }, 1500);
@@ -78,6 +104,46 @@ const ExerciseDetail = () => {
       setGeneratingDiagram(false);
     }
   };
+
+
+
+  const handleGenerateCode = async () => {
+    if (!exercise || !id) return;
+
+    setGeneratingCode(true);
+    try {
+      const result = await agentService.solveLogic({
+        modo: 'code',
+        enunciado: `Generar código completo de solución para: ${exercise.title}. ${exercise.description}. Lenguaje: ${exercise.language || 'JavaScript'}`
+      });
+
+      console.log('🔍 Resultado código completo:', result);
+
+      if (result && result.explicacion) {
+        // Combinar respuesta + explicación para tener código completo
+        const fullCodeContent = `${result.respuesta}\n\n--- EXPLICACIÓN ---\n${result.explicacion}`;
+
+        await saveAIResult(id, {
+          type: 'code',
+          content: fullCodeContent
+        });
+
+        toast.success('Código de solución generado y guardado');
+        setExercise(prev => prev ? {
+          ...prev,
+          generatedCode: fullCodeContent
+        } : prev);
+      } else {
+        toast.success('Código generado. Redirigiendo...');
+      }
+
+    } catch (error) {
+      toast.error('Error generando código');
+    } finally {
+      setGeneratingCode(false);
+    }
+  };
+
 
   const handleDelete = async () => {
     if (!exercise || !id) return;
@@ -94,9 +160,9 @@ const ExerciseDetail = () => {
   };
 
   const handleChatWithContext = () => {
-  // Navegar al chat con query params
-  navigate(`/chat?exercise=${id}&context=${encodeURIComponent(exercise.title + ': ' + exercise.description)}`);
-};
+    // Navegar al chat con query params
+    navigate(`/chat?exercise=${id}&context=${encodeURIComponent(exercise.title + ': ' + exercise.description)}`);
+  };
 
 
   if (loading) {
@@ -205,6 +271,45 @@ const ExerciseDetail = () => {
             </div>
           )}
         </div>
+        {/* AÑADIR ESTA SECCIÓN COMPLETA: */}
+        {/* Resultados de IA guardados */}
+        {(exercise.aiAnalysis || exercise.generatedCode || exercise.diagramCode) && (
+          <div className="card bg-base-100 shadow-lg">
+            <div className="card-body">
+              <h2 className="card-title text-xl mb-4">🤖 Resultados de IA</h2>
+
+              {/* Análisis */}
+              {exercise.aiAnalysis && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-2 text-primary">🧠 Análisis del Ejercicio</h3>
+                  <div className="bg-base-200 p-4 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm">{exercise.aiAnalysis}</pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Código Generado */}
+              {exercise.generatedCode && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-2 text-secondary">💻 Código Generado</h3>
+                  <div className="bg-base-200 p-4 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm font-mono">{exercise.generatedCode}</pre>
+                  </div>
+                </div>
+              )}
+
+              {/* Diagrama */}
+              {exercise.diagramCode && (
+                <div className="mb-6">
+                  <h3 className="text-lg font-semibold mb-2 text-accent">📊 Diagrama Generado</h3>
+                  <div className="bg-base-200 p-4 rounded-lg">
+                    <pre className="whitespace-pre-wrap text-sm font-mono">{exercise.diagramCode}</pre>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* Sidebar */}
         <div className="space-y-6">
@@ -291,12 +396,45 @@ const ExerciseDetail = () => {
                     </>
                   )}
                 </button>
+
+                <button
+                  onClick={handleGenerateCode}
+                  disabled={generatingCode}
+                  className="btn btn-info w-full"
+                >
+                  {generatingCode ? (
+                    <>
+                      <span className="loading loading-spinner loading-sm"></span>
+                      Generando código...
+                    </>
+                  ) : (
+                    <>
+                      💻 Generar Código de Solución
+                    </>
+                  )}
+                </button>
                 <button
                   onClick={handleChatWithContext}
                   className="btn btn-accent w-full"
                 >
                   💬 Preguntar al Chat
                 </button>
+                {(exercise.aiAnalysis || exercise.generatedCode || exercise.diagramCode) && (
+                  <div className="mt-4 p-3 bg-success/10 rounded-lg">
+                    <div className="text-xs font-semibold text-success mb-1">✅ Contenido IA guardado:</div>
+                    <div className="space-y-1 text-xs">
+                      {exercise.aiAnalysis && <div>• Análisis disponible</div>}
+                      {exercise.generatedCode && <div>• Código de solución disponible</div>}
+                      {exercise.diagramCode && <div>• Diagrama disponible</div>}
+                    </div>
+                  </div>
+                )}
+                {(isSaving || generatingCode) && (
+                  <div className="mt-2 text-xs text-warning flex items-center gap-1">
+                    <span className="loading loading-spinner loading-xs"></span>
+                    {generatingCode ? 'Generando código...' : 'Guardando resultado...'}
+                  </div>
+                )}
 
               </div>
 

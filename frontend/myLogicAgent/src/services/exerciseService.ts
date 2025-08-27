@@ -1,4 +1,5 @@
-// Reemplazar el archivo completo
+// frontend/src/services/exerciseService.ts
+
 import api from './api';
 import type { 
   Exercise, 
@@ -48,6 +49,19 @@ export const exerciseService = {
   // Obtener estadísticas
   getStats: async (): Promise<ExerciseStats> => {
     const response = await api.get('/api/exercises/stats');
+    return response.data;
+  },
+
+  // NUEVO: Guardar resultados de IA
+  saveAIResult: async (
+    id: string, 
+    aiData: {
+      aiAnalysis?: string;
+      generatedCode?: string;
+      diagramCode?: string;
+    }
+  ): Promise<Exercise> => {
+    const response = await api.put(`/api/exercises/${id}/ai-result`, aiData);
     return response.data;
   }
 };
