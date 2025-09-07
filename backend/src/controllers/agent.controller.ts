@@ -44,11 +44,13 @@ ${opciones ? 'Opciones: ' + opciones.join(', ') : ''}`;
     let parsed: LogicResponse;
     try {
       parsed = JSON.parse(limpio);
-    } catch (parseError) {
+    } catch (parseError: unknown) {
       console.error('❌ Error al parsear JSON:', parseError);
+      const detail = parseError instanceof Error ? parseError.message : 'Error de parseo desconocido.';
+
       return res.status(500).json({
         error: 'Formato de respuesta inválido de Gemini',
-        detalle: parseError.message,
+        detalle: detail,
         raw: raw
       });
     }
@@ -71,5 +73,42 @@ ${opciones ? 'Opciones: ' + opciones.join(', ') : ''}`;
       detalle: error.message,
       raw: error?.raw || null
     });
+  }
+};
+// AÑADIR estas funciones al final del archivo:
+
+export const getLogicHistory = async (req: Request, res: Response) => {
+  try {
+    const { page = 1, limit = 20 } = req.query;
+    
+    const history = await LogicModel
+      .find()
+      .sort({ timestamp: -1 })
+      .limit(Number(limit))
+      .skip((Number(page) - 1) * Number(limit));
+
+    const total = await LogicModel.countDocuments();
+
+    res.json({
+      history,
+      pagination: {
+        current: Number(page),
+        pages: Math.ceil(total / Number(limit)),
+        total
+      }
+    });
+
+  } catch (error) {
+    res.status(500).json({ error: 'Error obteniendo historial' });
+  }
+};
+
+export const deleteLogicEntry = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    await LogicModel.findByIdAndDelete(id);
+    res.json({ message: 'Entrada eliminada' });
+  } catch (error) {
+    res.status(500).json({ error: 'Error eliminando entrada' });
   }
 };
