@@ -4,6 +4,10 @@ import { Request, Response } from 'express';
 import { queryGemini } from '../services/gemini.service';
 import { DiagramModel } from '../models/diagram.model';
 
+
+
+// backend/src/controllers/diagram.controller.ts
+
 export const generateDiagram = async (req: Request, res: Response) => {
   const { enunciado } = req.body;
 
@@ -11,27 +15,67 @@ export const generateDiagram = async (req: Request, res: Response) => {
     return res.status(400).json({ error: 'Falta el enunciado o es inválido' });
   }
 
-  const prompt = `Convierte el siguiente enunciado en un diagrama de flujo en formato Mermaid. 
-    Devuelve solo el código Mermaid, sin explicaciones, sin formato Markdown, 
-    sin comillas dobles dentro de los nodos, y con saltos de línea adecuados.
-    Enunciado: ${enunciado}`;
+  // PROMPT MEJORADO con regla adicional sobre corchetes
+  const prompt = `Genera un diagrama de flujo en formato Mermaid para el siguiente algoritmo.
+
+REGLAS ESTRICTAS:
+1. Usa SOLO la sintaxis: graph TD
+2. Los nodos deben ser simples: A[texto corto], B{pregunta?}, C((inicio))
+3. NO uses paréntesis ni corchetes dobles dentro de los nodos
+4. NO uses comillas dentro de los nodos
+5. Mantén los textos de nodos MUY cortos (máximo 30 caracteres)
+6. Las conexiones: A-->B o A-->|Si|B
+7. Cada nodo SOLO un corchete de apertura y uno de cierre: A[texto]
+8. NO añadas explicaciones
+
+EJEMPLO CORRECTO:
+graph TD
+    A((Inicio))
+    B[Leer N]
+    C{Es par?}
+    D[Mostrar par]
+    E[Mostrar impar]
+    F((Fin))
+    A-->B
+    B-->C
+    C-->|Si|D
+    C-->|No|E
+    D-->F
+    E-->F
+
+Algoritmo:
+${enunciado}
+
+SOLO código Mermaid, sin texto adicional.`;
 
   try {
     const raw = await queryGemini(prompt);
-    const mermaid = raw
-      .replace(/```mermaid\s*/i, '')
+    
+    // LIMPIEZA AGRESIVA
+    let mermaid = raw
+      .replace(/```mermaid\s*/gi, '')
       .replace(/```/g, '')
       .replace(/;(?=\n)/g, '')
-      .replace(/"([^"]*)"/g, '$1') // elimina comillas dobles dentro de nodos
       .trim();
 
-    if (!mermaid.includes('graph TD')) {
+    // Limpiar paréntesis dentro de corchetes/llaves
+    mermaid = mermaid.replace(/\[([^\]]*)\(([^\]]*)\)/g, '[$1 $2]');
+    mermaid = mermaid.replace(/\{([^\}]*)\(([^\}]*)\)/g, '{$1 $2}');
+    
+    // NUEVO: Limpiar corchetes dobles incorrectos
+    mermaid = mermaid.replace(/\[\[/g, '[');
+    mermaid = mermaid.replace(/\]\]/g, ']');
+    
+    // Remover comillas dobles
+    mermaid = mermaid.replace(/"([^"]*)"/g, '$1');
+
+    if (!mermaid.includes('graph TD') && !mermaid.includes('graph LR')) {
       return res.status(500).json({ error: 'La respuesta no contiene un diagrama válido' });
     }
 
     console.log('📈 Diagrama Mermaid generado:', mermaid);
 
-    // NUEVO: Guardar en MongoDB
+    // Guardar en MongoDB
     console.log('🧠 Guardando diagrama en MongoDB...');
     await DiagramModel.create({
       enunciado,
@@ -49,8 +93,7 @@ export const generateDiagram = async (req: Request, res: Response) => {
     });
   }
 };
-
-// NUEVO: Obtener historial de diagramas
+// Obtener historial de diagramas
 export const getDiagramHistory = async (req: Request, res: Response) => {
   try {
     const { page = 1, limit = 20 } = req.query;
@@ -77,7 +120,7 @@ export const getDiagramHistory = async (req: Request, res: Response) => {
   }
 };
 
-// NUEVO: Eliminar diagrama del historial
+// Eliminar diagrama del historial
 export const deleteDiagramEntry = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
