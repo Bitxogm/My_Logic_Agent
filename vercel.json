@@ -1,0 +1,23 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "frontend/myLogicAgent/package.json",
+      "use": "@vercel/static-build"
+    },
+    {
+      "src": "backend/index.ts", 
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "backend/index.ts"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "frontend/myLogicAgent/dist/$1"
+    }
+  ]
+}
