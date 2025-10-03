@@ -6,7 +6,8 @@
       "use": "@vercel/static-build"
     },
     {
-      "src": "backend/index.ts", 
+      // Vercel detectará el package.json dentro del src
+      "src": "backend/package.json", 
       "use": "@vercel/node"
     }
   ],
