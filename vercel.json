@@ -6,27 +6,29 @@
       "use": "@vercel/static-build"
     },
     {
-      // Vercel detectará el package.json dentro del src
-      "src": "backend/package.json", 
+      "src": "backend/index.ts", 
       "use": "@vercel/node"
     }
   ],
-  "routes": [
+  "rewrites": [
+    // 1. Reescribe todas las llamadas que van al backend
+    // Vercel usará la función Serverless generada
     {
-      "src": "/api/(.*)",
-      "dest": "backend/index.ts"
+      "source": "/api/(.*)",
+      "destination": "/backend/index.ts" 
     },
     {
-      "src": "/chatbot/(.*)",
-      "dest": "backend/index.ts"
+      "source": "/chatbot/(.*)",
+      "destination": "/backend/index.ts" 
     },
     {
-      "src": "/diagram/(.*)",
-      "dest": "backend/index.ts"
+      "source": "/diagram/(.*)",
+      "destination": "/backend/index.ts" 
     },
+    // 2. Deja que el frontend maneje todo lo demás
     {
-      "src": "/(.*)",
-      "dest": "frontend/myLogicAgent/dist/$1"
+      "source": "/(.*)",
+      "destination": "/frontend/myLogicAgent/dist/$1"
     }
   ]
 }
