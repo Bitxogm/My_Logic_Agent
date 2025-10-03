@@ -56,7 +56,6 @@ app.get('/', (_req, res) => {
 
 
 // 🧨 Iniciar servidor
-
 // ✅ Lógica de inicio para ambos entornos (Local vs. Vercel)
 
 // 1. Si NO estamos en producción (estamos en local), ¡iniciamos el servidor!
