@@ -16,6 +16,14 @@
       "dest": "backend/index.ts"
     },
     {
+      "src": "/chatbot/(.*)",
+      "dest": "backend/index.ts"
+    },
+    {
+      "src": "/diagram/(.*)",
+      "dest": "backend/index.ts"
+    },
+    {
       "src": "/(.*)",
       "dest": "frontend/myLogicAgent/dist/$1"
     }
