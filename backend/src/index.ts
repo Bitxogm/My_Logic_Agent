@@ -8,7 +8,6 @@ import agentRoutes from './routes/agent.routes';
 import diagramRoutes from './routes/diagram.routes';
 import chatbotRoutes from './routes/chatbot.routes'
 
-
 // 🧪 Cargar variables de entorno
 dotenv.config();
 
@@ -53,8 +52,6 @@ app.get('/', (_req, res) => {
   res.send('🧠 Agente lógico en marcha');
 });
 
-
-
 // 🧨 Iniciar servidor
 // ✅ Lógica de inicio para ambos entornos (Local vs. Vercel)
 
@@ -67,5 +64,5 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 // 2. Si estamos en producción (Vercel), exportamos la app.
-// Esto es lo que Vercel ejecutará como Serverless Function.
-module.exports = app;
+// CAMBIO CRÍTICO: Usar export default en lugar de module.exports
+export default app;

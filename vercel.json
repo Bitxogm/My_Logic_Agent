@@ -1,37 +1,37 @@
-
 {
   "version": 2,
+  "buildCommand": "npm run build",
+  "outputDirectory": "frontend/myLogicAgent/dist",
   "builds": [
     {
-      "src": "frontend/myLogicAgent/package.json",
-      "use": "@vercel/static-build"
+      "src": "api/index.js",
+      "use": "@vercel/node"
     },
     {
-      "src": "backend/package.json", 
-      "use": "@vercel/node"
+      "src": "frontend/myLogicAgent/dist/**",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
-
     {
       "src": "/api/(.*)",
-      "dest": "backend/dist/index.ts" 
+      "dest": "/api/index.js"
     },
     {
-      "src": "/agent/(.*)", 
-      "dest": "backend/dist/index.ts"
+      "src": "/agent/(.*)",
+      "dest": "/api/index.js"
     },
     {
       "src": "/diagram/(.*)",
-      "dest": "backend/dist/index.ts"
+      "dest": "/api/index.js"
     },
     {
       "src": "/chatbot/(.*)",
-      "dest": "backend/dist/index.ts"
+      "dest": "/api/index.js"
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/myLogicAgent/dist/$1"
+      "dest": "/frontend/myLogicAgent/dist/$1"
     }
   ]
 }
