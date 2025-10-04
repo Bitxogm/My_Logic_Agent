@@ -15,19 +15,19 @@
 
     {
       "src": "/api/(.*)",
-      "dest": "backend/index.ts" 
+      "dest": "backend/dist/index.ts" 
     },
     {
       "src": "/agent/(.*)", 
-      "dest": "backend/index.ts"
+      "dest": "backend/dist/index.ts"
     },
     {
       "src": "/diagram/(.*)",
-      "dest": "backend/index.ts"
+      "dest": "backend/dist/index.ts"
     },
     {
       "src": "/chatbot/(.*)",
-      "dest": "backend/index.ts"
+      "dest": "backend/dist/index.ts"
     },
     {
       "src": "/(.*)",
