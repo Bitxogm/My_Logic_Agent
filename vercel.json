@@ -12,13 +12,13 @@
     }
   ],
   "routes": [
-    // El resto del bloque 'routes' se mantiene igual
+
     {
       "src": "/api/(.*)",
       "dest": "backend/index.ts" 
     },
     {
-      "src": "/agent/(.*)", // Añadimos la ruta '/agent/' que aparece en el error
+      "src": "/agent/(.*)", 
       "dest": "backend/index.ts"
     },
     {
