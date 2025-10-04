@@ -1,5 +1,5 @@
 import api from './api';
-import { ChatRequest, ChatResponse, ChatSession,ChatSessionSummary } from '../types/chat';
+import type { ChatRequest, ChatResponse, ChatSession, ChatSessionSummary } from '../types/chat';
 
 export const chatService = {
   // Enviar mensaje al chatbot
