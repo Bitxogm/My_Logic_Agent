@@ -55,14 +55,23 @@ app.get('/', (_req, res) => {
 // 🧨 Iniciar servidor
 // ✅ Lógica de inicio para ambos entornos (Local vs. Vercel)
 
-// 1. Si NO estamos en producción (estamos en local), ¡iniciamos el servidor!
-if (process.env.NODE_ENV !== 'production') {
-  const PORT = process.env.PORT || 3000;
+// AL FINAL del archivo, REEMPLAZA todo esto:
+
+// 🧨 Iniciar servidor
+// 🧨 Iniciar servidor
+const PORT = process.env.PORT || 3000;
+
+// SIEMPRE iniciar servidor en producción
+if (process.env.NODE_ENV === 'production') {
+  app.listen(PORT, () => {
+    console.log(`🚀 Servidor (PROD) escuchando en puerto ${PORT}`);
+  });
+} else {
+  // En desarrollo
   app.listen(PORT, () => {
     console.log(`🚀 Servidor (DEV) escuchando en http://localhost:${PORT}`);
   });
 }
 
-// 2. Si estamos en producción (Vercel), exportamos la app.
-// CAMBIO CRÍTICO: Usar export default en lugar de module.exports
+// SOLO UN EXPORT
 export default app;
