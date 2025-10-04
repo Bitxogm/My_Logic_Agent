@@ -1,3 +1,35 @@
+// {
+//   "version": 2,
+//   "builds": [
+//     {
+//       "src": "frontend/myLogicAgent/package.json",
+//       "use": "@vercel/static-build"
+//     },
+//     {
+//       "src": "backend/index.ts", 
+//       "use": "@vercel/node"
+//     }
+//   ],
+//   "routes": [
+//     {
+//       "src": "/api/(.*)",
+//       "dest": "backend/index.ts"
+//     },
+//     {
+//       "src": "/chatbot/(.*)",
+//       "dest": "backend/index.ts"
+//     },
+//     {
+//       "src": "/diagram/(.*)",
+//       "dest": "backend/index.ts"
+//     },
+//     {
+//       "src": "/(.*)",
+//       "dest": "frontend/myLogicAgent/dist/$1"
+//     }
+//   ]
+// }
+
 {
   "version": 2,
   "builds": [
@@ -6,21 +38,26 @@
       "use": "@vercel/static-build"
     },
     {
-      "src": "backend/index.ts", 
+      "src": "backend/package.json", 
       "use": "@vercel/node"
     }
   ],
   "routes": [
+    // El resto del bloque 'routes' se mantiene igual
     {
       "src": "/api/(.*)",
-      "dest": "backend/index.ts"
+      "dest": "backend/index.ts" 
     },
     {
-      "src": "/chatbot/(.*)",
+      "src": "/agent/(.*)", // Añadimos la ruta '/agent/' que aparece en el error
       "dest": "backend/index.ts"
     },
     {
       "src": "/diagram/(.*)",
+      "dest": "backend/index.ts"
+    },
+    {
+      "src": "/chatbot/(.*)",
       "dest": "backend/index.ts"
     },
     {
