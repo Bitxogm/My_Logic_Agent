@@ -9,7 +9,7 @@
     "dev:browser": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\" \"npm run browser\"",
     "browser": "sleep 3 && google-chrome --incognito --new-window http://localhost:5173",
     "build": "npm run build:backend && npm run build:frontend",
-    "build:backend": "cd backend && npm run build",
+    "build:backend": "cd backend && npm install && npm run build",
     "build:frontend": "cd frontend/myLogicAgent && npm run build",
     
     "vercel-build": "npm run build",
