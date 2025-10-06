@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "buildCommand": "cd frontend/myLogicAgent && npm run build",
+  "outputDirectory": "frontend/myLogicAgent/dist",
+  "installCommand": "cd frontend/myLogicAgent && npm install"
+}
