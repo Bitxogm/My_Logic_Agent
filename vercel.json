@@ -6,26 +6,18 @@
       "use": "@vercel/static-build"
     },
     {
-      "src": "backend/index.ts", 
+      "src": "api/**/*.js",
       "use": "@vercel/node"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/index.ts"
-    },
-    {
-      "src": "/chatbot/(.*)",
-      "dest": "backend/index.ts"
-    },
-    {
-      "src": "/diagram/(.*)",
-      "dest": "backend/index.ts"
+      "dest": "/api/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "frontend/myLogicAgent/dist/$1"
+      "dest": "/frontend/myLogicAgent/dist/$1"
     }
   ]
 }

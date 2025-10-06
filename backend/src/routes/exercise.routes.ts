@@ -44,6 +44,7 @@ router.post('/', async (req, res) => {
     res.status(201).json(savedExercise);
   } catch (err) {
     res.status(400).json({ error: 'Error al crear ejercicio' });
+    console.log(`Error : ${err}`)
   }
 });
 
